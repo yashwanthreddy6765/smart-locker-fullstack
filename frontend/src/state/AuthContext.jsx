@@ -4,11 +4,24 @@ import { api } from "../api/client.js";
 
 const AuthContext = createContext(null);
 
+function getSavedUser() {
+  const saved = localStorage.getItem("user");
+  if (!saved) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(saved);
+  } catch {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("user");
+    return null;
+  }
+}
+
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState(getSavedUser);
 
   const login = async (credentials) => {
     const { data } = await api.post("/auth/login/", credentials);
