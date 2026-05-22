@@ -1,4 +1,4 @@
-import { UserPlus } from "lucide-react";
+import { ShieldCheck, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
@@ -8,7 +8,8 @@ import { useAuth } from "../state/AuthContext.jsx";
 export default function RegisterPage() {
   const { isAuthenticated, register } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", username: "", email: "", password: "" });
+  const [form, setForm] = useState({ name: "", username: "", email: "", password: "", admin_code: "" });
+  const [showAdminField, setShowAdminField] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -73,6 +74,32 @@ export default function RegisterPage() {
               required
             />
           </label>
+
+          {!showAdminField ? (
+            <button
+              type="button"
+              className="flex w-full items-center justify-center gap-2 rounded-md border border-dashed border-slate-300 px-3 py-2 text-sm font-medium text-slate-500 transition hover:border-teal hover:text-teal"
+              onClick={() => setShowAdminField(true)}
+            >
+              <ShieldCheck size={16} />
+              Register as admin?
+            </button>
+          ) : (
+            <label className="block">
+              <span className="flex items-center gap-1.5 text-sm font-semibold text-teal">
+                <ShieldCheck size={15} />
+                Admin Code
+              </span>
+              <input
+                className="focus-ring mt-1 w-full rounded-md border border-slate-300 px-3 py-2"
+                placeholder="Enter admin secret code"
+                type="password"
+                value={form.admin_code}
+                onChange={(event) => setForm({ ...form, admin_code: event.target.value })}
+              />
+            </label>
+          )}
+
           {error && <p className="rounded-md bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700">{error}</p>}
           <Button className="w-full" disabled={loading}>
             <UserPlus size={16} />

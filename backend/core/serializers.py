@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework import serializers
@@ -21,10 +22,11 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
     name = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    admin_code = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "password", "name", "first_name", "last_name")
+        fields = ("id", "username", "email", "password", "name", "first_name", "last_name", "admin_code")
         read_only_fields = ("id",)
 
     def validate_email(self, value):
@@ -32,7 +34,17 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A user with this email already exists.")
         return value
 
+    def validate_admin_code(self, value):
+        if value:
+            expected = getattr(settings, "ADMIN_SECRET_CODE", "")
+            if not expected:
+                raise serializers.ValidationError("Admin registration is not configured.")
+            if value != expected:
+                raise serializers.ValidationError("Invalid admin code.")
+        return value
+
     def create(self, validated_data):
+        admin_code = validated_data.pop("admin_code", "")
         name = validated_data.pop("name", "").strip()
         password = validated_data.pop("password")
         if name and not validated_data.get("first_name"):
@@ -42,6 +54,8 @@ class RegisterSerializer(serializers.ModelSerializer):
                 validated_data["last_name"] = parts[1]
         user = User(**validated_data)
         user.set_password(password)
+        if admin_code:
+            user.is_staff = True
         user.save()
         return user
 

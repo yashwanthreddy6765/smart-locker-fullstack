@@ -120,6 +120,8 @@ REST_FRAMEWORK = {
     ),
 }
 
+ADMIN_SECRET_CODE = os.getenv("ADMIN_SECRET_CODE", "")
+
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),

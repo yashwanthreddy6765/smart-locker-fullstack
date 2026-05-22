@@ -17,7 +17,7 @@ export default function ReservationsPage() {
 
   const loadData = async () => {
     const [lockerResponse, reservationResponse] = await Promise.all([
-      api.get("/lockers/?status=available"),
+      api.get("/lockers/"),
       api.get("/reservations/"),
     ]);
     setLockers(lockerResponse.data);
@@ -66,10 +66,13 @@ export default function ReservationsPage() {
           onChange={(event) => setForm({ ...form, locker: event.target.value })}
           required
         >
-          <option value="">Choose available locker</option>
+          <option value="">Choose a locker</option>
+          {lockers.filter((l) => l.status === "available").length === 0 && (
+            <option value="" disabled>No available lockers right now</option>
+          )}
           {lockers.map((locker) => (
-            <option key={locker.id} value={locker.id}>
-              {locker.locker_number} - {locker.location}
+            <option key={locker.id} value={locker.id} disabled={locker.status !== "available"}>
+              {locker.locker_number} — {locker.location}{locker.status !== "available" ? ` (${locker.status})` : " (available)"}
             </option>
           ))}
         </select>
