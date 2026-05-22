@@ -16,12 +16,17 @@ export default function ReservationsPage() {
   const [error, setError] = useState("");
 
   const loadData = async () => {
-    const [lockerResponse, reservationResponse] = await Promise.all([
-      api.get("/lockers/"),
-      api.get("/reservations/"),
-    ]);
-    setLockers(lockerResponse.data);
-    setReservations(reservationResponse.data);
+    setError("");
+    try {
+      const [lockerResponse, reservationResponse] = await Promise.all([
+        api.get("/lockers/"),
+        api.get("/reservations/"),
+      ]);
+      setLockers(lockerResponse.data);
+      setReservations(reservationResponse.data);
+    } catch {
+      setError("Could not load data.");
+    }
   };
 
   useEffect(() => {
@@ -51,8 +56,13 @@ export default function ReservationsPage() {
   };
 
   const releaseReservation = async (id) => {
-    await api.put(`/reservations/${id}/release/`);
-    loadData();
+    setError("");
+    try {
+      await api.put(`/reservations/${id}/release/`);
+      loadData();
+    } catch {
+      setError("Could not release reservation.");
+    }
   };
 
   return (

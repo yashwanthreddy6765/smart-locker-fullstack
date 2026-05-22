@@ -13,8 +13,12 @@ export default function AdminReservationsPage() {
   const [reservations, setReservations] = useState([]);
 
   const loadReservations = async () => {
-    const { data } = await api.get("/reservations/");
-    setReservations(data);
+    try {
+      const { data } = await api.get("/reservations/");
+      setReservations(data);
+    } catch {
+      // Error loading reservations — data stays stale rather than crashing
+    }
   };
 
   useEffect(() => {

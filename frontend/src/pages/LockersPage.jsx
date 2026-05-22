@@ -42,14 +42,24 @@ export default function LockersPage() {
 
   const createLocker = async (event) => {
     event.preventDefault();
-    await api.post("/lockers/", form);
-    setForm({ locker_number: "", location: "", status: "available" });
-    loadLockers();
+    setError("");
+    try {
+      await api.post("/lockers/", form);
+      setForm({ locker_number: "", location: "", status: "available" });
+      loadLockers();
+    } catch {
+      setError("Could not create locker.");
+    }
   };
 
   const deactivateLocker = async (id) => {
-    await api.delete(`/lockers/${id}/`);
-    loadLockers();
+    setError("");
+    try {
+      await api.delete(`/lockers/${id}/`);
+      loadLockers();
+    } catch {
+      setError("Could not deactivate locker.");
+    }
   };
 
   return (
