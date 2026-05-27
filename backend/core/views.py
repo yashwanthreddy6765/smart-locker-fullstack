@@ -38,7 +38,7 @@ class LockerViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
 
     def get_queryset(self):
-        queryset = Locker.objects.all()
+        queryset = Locker.objects.prefetch_related("reservations")
         status_filter = self.request.query_params.get("status")
         if status_filter:
             queryset = queryset.filter(status=status_filter)

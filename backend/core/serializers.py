@@ -75,9 +75,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class LockerSerializer(serializers.ModelSerializer):
+    reserved_since = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Locker
-        fields = ("id", "locker_number", "location", "status", "created_at", "updated_at")
+        fields = ("id", "locker_number", "location", "status", "size", "reserved_since", "created_at", "updated_at")
+
+    def get_reserved_since(self, obj):
+        active = obj.reservations.filter(status="active").first()
+        return active.created_at.isoformat() if active and active.created_at else None
 
 
 class ReservationSerializer(serializers.ModelSerializer):

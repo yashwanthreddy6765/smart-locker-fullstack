@@ -9,6 +9,7 @@ import RegisterPage from "./pages/RegisterPage.jsx";
 import LockersPage from "./pages/LockersPage.jsx";
 import ReservationsPage from "./pages/ReservationsPage.jsx";
 import AdminReservationsPage from "./pages/AdminReservationsPage.jsx";
+import MyDashboard from "./pages/MyDashboard.jsx";
 import "./styles.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -22,6 +23,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="register" element={<RegisterPage />} />
             <Route path="lockers" element={<LockersPage />} />
             <Route path="reservations" element={<ReservationsPage />} />
+            <Route path="dashboard" element={<MyDashboard />} />
             <Route path="admin/reservations" element={<AdminReservationsPage />} />
           </Route>
         </Routes>

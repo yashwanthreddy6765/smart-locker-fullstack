@@ -15,6 +15,28 @@ import PageHeader from "../components/PageHeader.jsx";
 import StatusBadge from "../components/StatusBadge.jsx";
 import { useAuth } from "../state/AuthContext.jsx";
 
+const SIZE_COLORS = {
+  small: "bg-purple-100 text-purple-700",
+  medium: "bg-blue-100 text-blue-700",
+  large: "bg-amber-100 text-amber-700",
+};
+const SIZE_LABELS = { small: "Small", medium: "Medium", large: "Large" };
+
+function formatDuration(isoString) {
+  const diff = Date.now() - new Date(isoString).getTime();
+  const hours = Math.floor(diff / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+
+  if (hours >= 24) {
+    const days = Math.floor(hours / 24);
+    return `${days} day${days > 1 ? "s" : ""} ago`;
+  }
+  if (hours > 0) {
+    return `${hours} hour${hours > 1 ? "s" : ""}${minutes > 0 ? ` ${minutes}m` : ""} ago`;
+  }
+  return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+}
+
 function getMinDatetime() {
   const now = new Date();
   now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
@@ -168,9 +190,9 @@ export default function ReservationsPage() {
                     )}
 
                     <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-start gap-2">
                         <span
-                          className={`grid h-9 w-9 place-items-center rounded-md text-sm font-bold ${
+                          className={`mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-md text-sm font-bold ${
                             isAvailable && !isSelected
                               ? "bg-teal/10 text-teal"
                               : isSelected
@@ -188,10 +210,25 @@ export default function ReservationsPage() {
                             <MapPin size={11} />
                             {locker.location}
                           </p>
+                          {/* Size label */}
+                          <span
+                            className={`mt-1.5 inline-block rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
+                              SIZE_COLORS[locker.size] || SIZE_COLORS.medium
+                            }`}
+                          >
+                            {SIZE_LABELS[locker.size] || locker.size}
+                          </span>
                         </div>
                       </div>
                       <StatusBadge value={locker.status} />
                     </div>
+
+                    {/* Duration for occupied lockers */}
+                    {!isAvailable && locker.reserved_since && (
+                      <p className="mt-2 text-left text-[10px] font-medium text-amber-600">
+                        Occupied — reserved {formatDuration(locker.reserved_since)}
+                      </p>
+                    )}
                   </button>
                 );
               })}
@@ -203,6 +240,13 @@ export default function ReservationsPage() {
                 <div className="mb-4 flex flex-wrap items-center gap-3">
                   <span className="rounded-md bg-teal/10 px-3 py-1 text-sm font-semibold text-teal">
                     {selectedLocker.locker_number}
+                  </span>
+                  <span
+                    className={`rounded-md px-2 py-0.5 text-xs font-semibold ${
+                      SIZE_COLORS[selectedLocker.size] || SIZE_COLORS.medium
+                    }`}
+                  >
+                    {SIZE_LABELS[selectedLocker.size] || selectedLocker.size}
                   </span>
                   <span className="text-sm text-slate-500">
                     {selectedLocker.location}

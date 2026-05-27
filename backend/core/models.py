@@ -18,9 +18,15 @@ class Locker(TimeStampedModel):
         INACTIVE = "inactive", "Inactive"
         MAINTENANCE = "maintenance", "Maintenance"
 
+    class Size(models.TextChoices):
+        SMALL = "small", "Small"
+        MEDIUM = "medium", "Medium"
+        LARGE = "large", "Large"
+
     locker_number = models.CharField(max_length=50, unique=True)
     location = models.CharField(max_length=255)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.AVAILABLE)
+    size = models.CharField(max_length=10, choices=Size.choices, default=Size.MEDIUM)
 
     class Meta:
         ordering = ["locker_number"]

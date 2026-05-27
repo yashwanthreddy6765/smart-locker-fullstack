@@ -36,6 +36,9 @@ export default function App() {
           <nav className="flex flex-wrap items-center gap-2">
             {isAuthenticated && <NavLink className={navClass} to="/lockers">Lockers</NavLink>}
             {isAuthenticated && <NavLink className={navClass} to="/reservations">My Reservations</NavLink>}
+            {isAuthenticated && !isAdmin && (
+              <NavLink className={navClass} to="/dashboard">My Dashboard</NavLink>
+            )}
             {isAuthenticated && isAdmin && (
               <NavLink className={navClass} to="/admin/reservations">All Reservations</NavLink>
             )}
